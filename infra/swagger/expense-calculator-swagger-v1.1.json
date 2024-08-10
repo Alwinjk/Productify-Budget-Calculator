@@ -1,0 +1,128 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Productify-Expense-Calcuator-API",
+    "version": "1.0.0",
+    "description": "This is an API that calculates expenses to manage budget of the user."
+  },
+  "paths": {
+    "/productify/expense-calculator/expense/create": {
+      "post": {
+        "summary": "Create a new item",
+        "description": "Adds a new item to the system.",
+        "requestBody": {
+          "description": "Item object that needs to be added",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateItemRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Item successfully created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateItemResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestException"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal system error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalSystemException"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CreateItemRequest": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number",
+            "format": "float"
+          },
+          "currency": {
+            "type": "string",
+            "enum": ["CAD"] 
+          },
+          "valueDate": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "category": {
+            "type": "string"
+          }
+        },
+        "required": ["title", "amount", "currency", "valueDate"]
+      },
+      "CreateItemResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": ["status", "message"]
+      },
+      "BadRequestException": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Bad Request"
+          },
+          "details": {
+            "type": "string",
+            "example": "Invalid input data"
+          }
+        }
+      },
+      "InternalSystemException": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Internal system error"
+          },
+          "details": {
+            "type": "string",
+            "example": "System error"
+          }
+        }
+      }
+    }
+  }
+}
