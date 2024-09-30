@@ -1,15 +1,32 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "Productify-Expense-Calcuator-API",
+    "title": "Productify-Expense-Calculator-API",
     "version": "1.0.0",
-    "description": "This is an API that calculates expenses to manage budget of the user."
+    "description": "This is an API that calculates expenses to manage the budget of the user."
   },
   "paths": {
     "/productify/expense-calculator/expense/create": {
       "post": {
-        "summary": "Create a new item",
+        "summary": "Create a new expense",
         "description": "Adds a new item to the system.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestIdHeader"
+          },
+          {
+            "$ref": "#/components/parameters/AppIdHeader"
+          }
+        ],
+        "x-amazon-apigateway-request-validator": {
+          "$ref": "#/components/x-amazon-apigateway-request-validators/ValidateBodyAndHeaders"
+        },
+        "x-amazon-apigateway-integrations": {
+          "uri": "arn:aws:apigateway:us-east-2:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-2:022499025833:function:Productify-ExpnsClcltr-dev-CalculateExpense/invocations",
+          "passthroughBehavior": "when_no_match",
+          "httpMethod": "POST",
+          "type": "aws_proxy"
+        },
         "requestBody": {
           "description": "Item object that needs to be added",
           "required": true,
@@ -24,6 +41,11 @@
         "responses": {
           "200": {
             "description": "Item successfully created",
+            "headers": {
+              "request-id": {
+                "$ref": "#/components/parameters/RequestIdHeader"
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -34,6 +56,11 @@
           },
           "400": {
             "description": "Bad Request - Invalid input",
+            "headers": {
+              "request-id": {
+                "$ref": "#/components/parameters/RequestIdHeader"
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -44,6 +71,11 @@
           },
           "500": {
             "description": "Internal system error",
+            "headers": {
+              "request-id": {
+                "$ref": "#/components/parameters/RequestIdHeader"
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -57,6 +89,32 @@
     }
   },
   "components": {
+    "parameters": {
+      "RequestIdHeader": {
+        "name": "request-id",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "description": "The unique identifier for the request"
+      },
+      "AppIdHeader": {
+        "name": "app-id",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "description": "The application identifier"
+      }
+    },
+    "x-amazon-apigateway-request-validators": {
+      "ValidateBodyAndHeaders": {
+        "validateRequestBody": true,
+        "validateRequestParameters": true
+      }
+    },
     "schemas": {
       "CreateItemRequest": {
         "type": "object",
@@ -73,7 +131,7 @@
           },
           "currency": {
             "type": "string",
-            "enum": ["CAD"] 
+            "enum": ["CAD"]
           },
           "valueDate": {
             "type": "string",
